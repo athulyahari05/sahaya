@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahaya - AI Pricing Assistant</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Manjari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pastel-pink-bg: #F9F9F9;
+            --app-teal: #006D5B;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', 'Manjari', sans-serif;
+            background-color: var(--pastel-pink-bg);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-serif {
+            font-family: 'DM Serif Display', serif;
+        }
+        .animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hide { display: none; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .btn-primary {
+            background-color: var(--app-teal);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body class="text-stone-800 pb-24">
+
+    <header id="app-header" class="bg-white/70 backdrop-blur-xl px-8 py-5 flex justify-between items-center sticky top-0 z-50 border-b border-stone-100 shadow-sm hide">
+        <div class="flex items-center gap-3">
+            <img src="logo.png" alt="" style="width: 50px;">
+            <span class="font-serif text-2xl tracking-tight text-[#9D0044]">Sahaya</span>
+        </div>
+        <button onclick="toggleLanguage()" id="lang-toggle-btn" class="border border-stone-200 text-stone-600 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/50 hover:bg-stone-50 transition-colors">
+            മലയാളം
+        </button>
+    </header>
+
+    <main id="view-container" class="max-w-md mx-auto p-6 md:p-8"></main>
+    <nav id="app-nav" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#0B0E14] px-6 py-4 w-[90%] max-w-sm flex justify-around items-center shadow-2xl rounded-full z-[100] border border-white/5 hide">
+        <button onclick="setView('home')" class="nav-link p-3 rounded-xl text-stone-500 transition-all" data-view="home"><i data-lucide="shopping-cart" class="w-5 h-5"></i></button>
+        <button onclick="setView('predict')" class="nav-link p-3 rounded-xl text-stone-500 transition-all" data-view="predict"><i data-lucide="trending-up" class="w-5 h-5"></i></button>
+        <button onclick="setView('hub')" class="nav-link p-3 rounded-xl text-stone-500 transition-all" data-view="hub"><i data-lucide="truck" class="w-5 h-5"></i></button>
+        <button onclick="setView('community')" class="nav-link p-3 rounded-xl text-stone-500 transition-all" data-view="community"><i data-lucide="users" class="w-5 h-5"></i></button>
+        <button onclick="setView('setup')" class="nav-link p-3 rounded-xl text-stone-500 transition-all" data-view="setup"><i data-lucide="user" class="w-5 h-5"></i></button>
+    </nav>
+
+    <script>
+        const translations = {
+            en: {
+                start: "Begin Journey",
+                setupTitle: "Artisan Profile",
+                name: "Your Name",
+                artisanType: "Craft Category",
+                location: "Village / Cluster",
+                save: "Save Profile",
+                home: "Dashboard",
+                calculatePrice: "Price Assistant",
+                myProducts: "My Inventory",
+                communityPrice: "Market Trends",
+                demandStatus: "Market Activity",
+                materialCost: "Raw Materials (₹)",
+                laborHours: "Labor Duration (Hrs)",
+                getAiPrice: "Generate Suggested Price",
+                recommended: "Optimal Listing Price",
+                profit: "Estimated Margin",
+                villageAvg: "Local Cluster Avg",
+                districtMarket: "District Hub Price",
+                coopPrice: "State Cooperative",
+                back: "Go Back",
+                success: "Saved Successfully!",
+                pottery: "Pottery",
+                handloom: "Handloom",
+                jewelry: "Jewelry",
+                basketry: "Basketry",
+                bamboo: "Bamboo Craft",
+                food: "Food Processing",
+                other: "Custom Craft",
+                hub: "Artisan Hub",
+                locationDetected: "Data localized for"
+            },
+            ml: {
+                start: "തുടങ്ങുക",
+                setupTitle: "പ്രൊഫൈൽ വിവരങ്ങൾ",
+                name: "മുഴുവൻ പേര്",
+                artisanType: "തൊഴിൽ മേഖല",
+                location: "ഗ്രാമം / സ്ഥലം",
+                save: "വിവരങ്ങൾ സംരക്ഷിക്കുക",
+                home: "ഹോം",
+                calculatePrice: "വില കണക്കാക്കുക",
+                myProducts: "എന്റെ ഉൽപ്പന്നങ്ങൾ",
+                communityPrice: "വിപണി വിലകൾ",
+                demandStatus: "വിപണി നിലവാരം",
+                materialCost: "അസംസ്‌കൃത വസ്തുക്കളുടെ വില (₹)",
+                laborHours: "ജോലി സമയം (മണിക്കൂർ)",
+                getAiPrice: "AI വില കണ്ടെത്തുക",
+                recommended: "നിർദ്ദേശിച്ച വില",
+                profit: "പ്രതീക്ഷിക്കുന്ന ലാഭം",
+                villageAvg: "ഗ്രാമത്തിലെ ശരാശരി",
+                districtMarket: "ജില്ലാ മാർക്കറ്റ് വില",
+                coopPrice: "സംസ്ഥാന കോപ്പറേറ്റീവ് വില",
+                back: "തിരികെ",
+                pottery: "മൺപാത്ര നിർമ്മാണം",
+                handloom: "കൈത്തറി",
+                jewelry: "ആഭരണ നിർമ്മാണം",
+                basketry: "കൊട്ട നിർമ്മാണം",
+                bamboo: "ഈറ്റ/മുള ജോലി",
+                food: "ഭക്ഷ്യ ഉൽപ്പന്നങ്ങൾ",
+                other: "മറ്റുള്ളവ",
+                hub: "സഹായ ഹബ്ബ്",
+                locationDetected: "വിപണി വിവരങ്ങൾ ലഭ്യമായ സ്ഥലം"
+            }
+        };
+
+        const VILLAGE_MARKET_DATA = {
+            "chendamangalam": { cost_of_living: 1.15, name: "Chendamangalam" },
+            "palakkad": { cost_of_living: 0.90, name: "Palakkad" },
+            "alappuzha": { cost_of_living: 1.05, name: "Alappuzha" },
+            "default": { cost_of_living: 1.0, name: "Local Village" }
+        };
+
+        const MARKET_BENCHMARKS = {
+            pottery: { avg: 220 },
+            handloom: { avg: 1450 },
+            jewelry: { avg: 180 },
+            basketry: { avg: 300 },
+            bamboo: { avg: 450 },
+            food: { avg: 150 },
+            other: { avg: 250 }
+        };
+
+        // --- App State ---
+        let state = {
+            view: 'welcome',
+            lang: 'ml',
+            profile: { name: '', type: 'pottery', village: '' },
+            inventory: [],
+            prediction: null,
+            form: { material: '', labor: '' }
+        };
+
+        function setView(newView) {
+            state.view = newView;
+            render();
+            window.scrollTo(0, 0);
+        }
+
+        function toggleLanguage() {
+            state.lang = state.lang === 'en' ? 'ml' : 'en';
+            render();
+        }
+
+        function getLocalizedModifier() {
+            const key = state.profile.village.toLowerCase().trim();
+            return VILLAGE_MARKET_DATA[key] || VILLAGE_MARKET_DATA["default"];
+        }
+
+        function calculatePrice() {
+            const locationData = getLocalizedModifier();
+            const hourlyRate = 160 * locationData.cost_of_living;
+            const materialCost = Number(state.form.material) || 0;
+            const laborTime = Number(state.form.labor) || 0;
+            
+            const craftPremium = (state.profile.type === 'handloom' && state.profile.village.toLowerCase().includes('chendamangalam')) ? 1.30 :
+                                 (state.profile.type === 'pottery' && state.profile.village.toLowerCase().includes('palakkad')) ? 1.20 : 1.0;
+            
+            const basePrice = (materialCost * 1.2) + (laborTime * hourlyRate);
+            const finalPrice = Math.round(basePrice * craftPremium);
+
+            state.prediction = {
+                total: finalPrice,
+                profit: Math.round(finalPrice - (materialCost + (laborTime * 100))),
+                locationName: locationData.name
+            };
+            render();
+        }
+
+        function savePrediction() {
+            const t = translations[state.lang];
+            const newItem = {
+                id: Date.now(),
+                name: `${t[state.profile.type]} Item`,
+                price: state.prediction.total,
+                date: new Date().toISOString().split('T')[0]
+            };
+            state.inventory.unshift(newItem);
+            setTimeout(() => setView('inventory'), 500);
+        }
+
+        function render() {
+            const container = document.getElementById('view-container');
+            const nav = document.getElementById('app-nav');
+            const header = document.getElementById('app-header');
+            const t = translations[state.lang];
+
+            if (state.view === 'welcome') {
+                header.classList.add('hide');
+                nav.classList.add('hide');
+            } else {
+                header.classList.remove('hide');
+                document.getElementById('lang-toggle-btn').innerText = state.lang === 'en' ? 'മലയാളം' : 'English';
+                if (state.view === 'setup') nav.classList.add('hide');
+                else nav.classList.remove('hide');
+            }
+
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                if (btn.dataset.view === state.view) {
+                    btn.classList.add('text-white', 'opacity-100');
+                    btn.classList.remove('text-stone-500');
+                } else {
+                    btn.classList.remove('text-white', 'opacity-100');
+                    btn.classList.add('text-stone-500');
+                }
+            });
+
+            let html = '';
+
+            switch (state.view) {
+                case 'welcome':
+                    html = `
+                    <div class="flex flex-col items-center justify-center min-h-[90vh] text-center animate-fade-in">
+                        <div class="relative mb-12">
+                            <img src="logo.png" alt="">
+                        </div>
+
+                        <div class="space-y-4 mb-12">
+                            <div class="flex items-center justify-center gap-2">
+                                <h1 class="font-serif text-6xl text-[#1a1a1a] tracking-tighter leading-none">${state.lang === 'ml' ? 'സഹായ' : 'Sahaya'}</h1>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2C12 2 14.5 7 18 10C21.5 13 22 18 18 18C14 18 12 14 12 14C12 14 10 18 6 18C2 18 2.5 13 6 10C9.5 7 12 2 12 2Z" fill="#A7D397"/>
+                                </svg>
+                            </div>
+                            <p class="text-stone-400 font-medium px-10 text-md leading-relaxed">കരകൗശല വിദഗ്ധർക്കായി ഒരു AI സഹായി</p>
+                        </div>
+
+                        <div class="flex flex-col gap-6 w-full px-12">
+                            <div class="flex bg-stone-100 p-1.5 rounded-2xl border border-stone-200">
+                                <button onclick="state.lang='ml'; render();" class="flex-1 py-3 rounded-xl font-bold transition-all ${state.lang === 'ml' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'}">മലയാളം</button>
+                                <button onclick="state.lang='en'; render();" class="flex-1 py-3 rounded-xl font-bold transition-all ${state.lang === 'en' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'}">English</button>
+                            </div>
+                            <button onclick="setView('setup')" class="w-full btn-primary py-5 rounded-full font-bold text-xl shadow-xl active:scale-95 transform transition-all">${t.start}</button>
+                        </div>
+                    </div>`;
+                    break;
+
+                case 'setup':
+                    html = `
+                    <div class="space-y-8 animate-fade-in pb-12">
+                        <div class="text-center">
+                            <h2 class="font-serif text-4xl text-stone-900">${t.setupTitle}</h2>
+                        </div>
+                        <div class="bg-white p-10 rounded-[2.5rem] shadow-xl space-y-8 border border-stone-50">
+                            <div class="space-y-3">
+                                <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">${t.name}</label>
+                                <input type="text" id="prof-name" class="w-full bg-stone-50 border border-stone-100 p-5 rounded-2xl outline-none font-medium focus:ring-1 ring-stone-200 transition-all" placeholder="Enter name" value="${state.profile.name}">
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">${t.artisanType}</label>
+                                <select id="prof-type" class="w-full bg-stone-50 border border-stone-100 p-5 rounded-2xl outline-none font-bold text-stone-900 appearance-none cursor-pointer">
+                                    <option value="pottery">${t.pottery}</option>
+                                    <option value="handloom">${t.handloom}</option>
+                                    <option value="jewelry">${t.jewelry}</option>
+                                    <option value="basketry">${t.basketry}</option>
+                                    <option value="bamboo">${t.bamboo}</option>
+                                    <option value="food">${t.food}</option>
+                                    <option value="other">${t.other}</option>
+                                </select>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest ml-1">${t.location}</label>
+                                <input type="text" id="prof-village" class="w-full bg-stone-50 border border-stone-100 p-5 rounded-2xl outline-none font-medium placeholder:opacity-50" placeholder="Village name" value="${state.profile.village}">
+                            </div>
+                            <button onclick="saveProfile()" class="w-full btn-primary py-5 rounded-full font-bold text-xl shadow-lg transition-all active:scale-95">${t.save}</button>
+                        </div>
+                    </div>`;
+                    break;
+
+                case 'home':
+                    html = `
+                    <div class="space-y-8 animate-fade-in">
+                        <div class="bg-stone-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+                            <div class="relative z-10">
+                                <p class="opacity-50 font-semibold tracking-widest text-[10px] uppercase">Partner Artisan</p>
+                                <h1 class="font-serif text-4xl tracking-tight mt-1">${state.profile.name || 'Artisan'}</h1>
+                                <div class="mt-10 flex flex-wrap gap-3">
+                                    <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-[10px] font-bold border border-white/10 backdrop-blur-md uppercase tracking-widest">
+                                        <i data-lucide="zap" size="14" class="text-amber-400"></i> ${t.demandStatus}: <span class="text-amber-400">HIGH</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <button onclick="setView('predict')" class="group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-stone-50 hover:shadow-xl transition-all">
+                                <div class="p-5 bg-stone-50 text-stone-900 rounded-full mb-4 group-hover:bg-stone-900 group-hover:text-white transition-all"><i data-lucide="bar-chart-3" size="28"></i></div>
+                                <p class="font-bold text-sm text-stone-900 tracking-tight uppercase">${t.calculatePrice}</p>
+                            </button>
+                            <button onclick="setView('inventory')" class="group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-stone-50 hover:shadow-xl transition-all">
+                                <div class="p-5 bg-stone-50 text-stone-900 rounded-full mb-4 group-hover:bg-stone-900 group-hover:text-white transition-all"><i data-lucide="package" size="28"></i></div>
+                                <p class="font-bold text-sm text-stone-900 tracking-tight uppercase">${t.myProducts}</p>
+                            </button>
+                            <button onclick="setView('hub')" class="group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-stone-50 hover:shadow-xl transition-all">
+                                <div class="p-5 bg-stone-50 text-stone-900 rounded-full mb-4 group-hover:bg-stone-900 group-hover:text-white transition-all"><i data-lucide="truck" size="28"></i></div>
+                                <p class="font-bold text-sm text-stone-900 tracking-tight uppercase">${t.hub}</p>
+                            </button>
+                            <button onclick="setView('community')" class="group flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] shadow-sm border border-stone-50 hover:shadow-xl transition-all">
+                                <div class="p-5 bg-stone-50 text-stone-900 rounded-full mb-4 group-hover:bg-stone-900 group-hover:text-white transition-all"><i data-lucide="users" size="28"></i></div>
+                                <p class="font-bold text-sm text-stone-900 tracking-tight uppercase">${t.communityPrice}</p>
+                            </button>
+                        </div>
+                    </div>`;
+                    break;
+
+                case 'predict':
+                    html = `
+                    <div class="space-y-6 animate-fade-in pb-12">
+                        <button onclick="setView('home')" class="flex items-center gap-2 text-stone-900 font-bold font-serif"><i data-lucide="arrow-left" size="20"></i> ${t.back}</button>
+                        <div class="bg-white p-10 rounded-[3rem] shadow-2xl border border-stone-50">
+                            <h2 class="font-serif text-3xl text-stone-950 mb-2">${t.calculatePrice}</h2>
+                            <div class="flex items-center gap-2 bg-stone-50 p-4 rounded-2xl mb-8 border border-stone-100 text-stone-400">
+                                <i data-lucide="map-pin" size="16"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">${t.locationDetected}: ${state.profile.village || "Local Market"}</span>
+                            </div>
+                            <div class="space-y-10">
+                                <div class="space-y-4">
+                                    <label class="block text-[11px] font-bold text-stone-300 uppercase tracking-[0.2em] ml-1">${t.materialCost}</label>
+                                    <input type="number" id="form-material" class="w-full bg-stone-50 border-stone-100 p-6 rounded-2xl text-4xl font-serif text-stone-900 outline-none" value="${state.form.material}" placeholder="0">
+                                </div>
+                                <div class="space-y-4">
+                                    <label class="block text-[11px] font-bold text-stone-300 uppercase tracking-[0.2em] ml-1">${t.laborHours}</label>
+                                    <input type="number" id="form-labor" class="w-full bg-stone-50 border-stone-100 p-6 rounded-2xl text-4xl font-serif text-stone-900 outline-none" value="${state.form.labor}" placeholder="0">
+                                </div>
+                                <button onclick="handleCalculateClick()" class="w-full btn-primary py-6 rounded-full font-bold text-2xl shadow-xl transition-all active:scale-95 transform">${t.getAiPrice}</button>
+                            </div>
+                        </div>
+                        ${state.prediction ? `
+                        <div class="bg-stone-950 text-white p-12 rounded-[3.5rem] shadow-2xl animate-fade-in relative overflow-hidden">
+                            <div class="text-center space-y-4 mb-10">
+                                <p class="text-stone-400 font-bold uppercase tracking-[0.4em] text-[10px] opacity-60">${t.recommended}</p>
+                                <h3 class="font-serif text-8xl tracking-tighter">₹${state.prediction.total}</h3>
+                                <div class="inline-flex items-center gap-3 bg-white/5 px-6 py-3 rounded-full text-xs font-bold border border-white/5 backdrop-blur-md">
+                                    <i data-lucide="sparkles" size="18" class="text-amber-200"></i>
+                                    <span class="text-stone-50">${t.profit}: ₹${state.prediction.profit}</span>
+                                </div>
+                            </div>
+                            <button onclick="savePrediction()" class="w-full bg-white text-stone-950 py-5 rounded-full font-bold text-xl flex items-center justify-center gap-3 hover:bg-stone-50 transition-all"><i data-lucide="plus-circle" size="22"></i> ${t.save}</button>
+                        </div>` : ''}
+                    </div>`;
+                    break;
+
+                case 'inventory':
+                    html = `
+                    <div class="space-y-8 animate-fade-in pb-12">
+                        <button onclick="setView('home')" class="flex items-center gap-2 text-stone-900 font-bold font-serif"><i data-lucide="arrow-left" size="20"></i> ${t.back}</button>
+                        <h2 class="font-serif text-4xl text-stone-900">${t.myProducts}</h2>
+                        <div class="grid grid-cols-1 gap-6">
+                            ${state.inventory.map(item => `
+                            <div class="bg-white p-6 rounded-[2rem] border border-stone-50 flex items-center gap-6 shadow-sm">
+                                <div class="w-20 h-20 bg-stone-50 rounded-2xl flex items-center justify-center text-stone-400"><i data-lucide="package" size="32"></i></div>
+                                <div class="flex-1">
+                                    <p class="font-bold text-xl text-stone-900">${item.name}</p>
+                                    <p class="text-[10px] text-stone-300 font-bold uppercase tracking-widest mt-1">${item.date}</p>
+                                </div>
+                                <p class="font-serif text-3xl text-stone-900">₹${item.price}</p>
+                            </div>`).join('')}
+                        </div>
+                    </div>`;
+                    break;
+
+                case 'community':
+                    const b = MARKET_BENCHMARKS[state.profile.type] || MARKET_BENCHMARKS.other;
+                    const loc = getLocalizedModifier();
+                    const avg = Math.round(b.avg * loc.cost_of_living);
+                    
+                    html = `
+                    <div class="space-y-8 animate-fade-in pb-12">
+                        <button onclick="setView('home')" class="flex items-center gap-2 text-stone-900 font-bold font-serif"><i data-lucide="arrow-left" size="20"></i> ${t.back}</button>
+                        <h2 class="font-serif text-4xl text-stone-900">${t.communityPrice}</h2>
+                        <div class="bg-white p-10 rounded-[3rem] border border-stone-50 shadow-xl space-y-10">
+                            <div class="flex items-center gap-2 text-stone-300 font-bold text-xs uppercase tracking-[0.2em]">
+                                <i data-lucide="map-pin" size="16"></i> ${loc.name} Registry
+                            </div>
+                            <div class="p-10 bg-stone-50/50 rounded-[2.5rem] border border-stone-100 text-center">
+                                <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">${t.villageAvg}</p>
+                                <h3 class="font-serif text-7xl text-stone-950">₹${avg}</h3>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-center p-8 bg-stone-50/50 rounded-[2.5rem] border border-stone-50">
+                                    <span class="font-bold text-stone-500">${t.districtMarket}</span>
+                                    <span class="font-serif text-3xl text-stone-950">₹${Math.round(avg * 1.2)}</span>
+                                </div>
+                                <div class="flex justify-between items-center p-8 bg-stone-50/50 rounded-[2.5rem] border border-stone-50">
+                                    <span class="font-bold text-stone-500">${t.coopPrice}</span>
+                                    <span class="font-serif text-3xl text-stone-950">₹${Math.round(avg * 0.95)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    break;
+
+                case 'hub':
+                    html = `
+                    <div class="space-y-8 animate-fade-in pb-12">
+                        <button onclick="setView('home')" class="flex items-center gap-2 text-stone-900 font-bold font-serif"><i data-lucide="arrow-left" size="20"></i> ${t.back}</button>
+                        <div class="bg-stone-950 p-12 rounded-[4rem] text-white shadow-2xl text-center">
+                            <i data-lucide="users" class="mx-auto mb-6 opacity-30" size="48"></i>
+                            <h2 class="font-serif text-4xl mb-4 italic">${t.hub}</h2>
+                            <p class="opacity-60 font-medium leading-relaxed font-serif text-xl">Connecting women creators across Kerala. Join group orders for materials soon.</p>
+                        </div>
+                    </div>`;
+                    break;
+            }
+
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function saveProfile() {
+            state.profile.name = document.getElementById('prof-name').value;
+            state.profile.type = document.getElementById('prof-type').value;
+            state.profile.village = document.getElementById('prof-village').value;
+            setView('home');
+        }
+
+        function handleCalculateClick() {
+            state.form.material = document.getElementById('form-material').value;
+            state.form.labor = document.getElementById('form-labor').value;
+            calculatePrice();
+        }
+
+        window.onload = render;
+    </script>
+</body>
+</html>
