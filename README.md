@@ -78,7 +78,6 @@ List the key features of your project:
 
 #### Installation
 ```bash
-git clone https://github.com/athulyahari05/sahaya-ai.git
 git clone https://github.com/swathy00/sahaya-ai.git
 
 ```
