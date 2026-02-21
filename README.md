@@ -2,27 +2,49 @@
   <img src="./logo.png" alt="Project Banner" width="20%">
 </p>
 
-# [Sahaya] 🎯
+# Sahaya
 
 ## Basic Details
 
-### Team Name: [Innovher]
+### Team Name: Innovher
 
 ### Team Members
-- Member 1: [Athulya Hari] - [College of engineering kallooppara]
-- Member 2: [Swathy krishnan] - [College of engineering kallooppara]
+- Member 1: Athulya Hari - College of engineering kallooppara
+- Member 2: Swathy krishnan - College of engineering kallooppara
 
 ### Hosted Project Link
-[mention your project hosted link here]
+ https://athulyahari05.github.io/sahaya/
 
 ### Project Description
-[2-3 lines about what your project does]
+Sahaya is a bilingual AI-powered pricing assistant designed to support rural women artisans in Kerala. It helps artisans calculate optimal selling prices based on material cost, labor time, village-level cost adjustments, and craft-specific market trends.
 
 ### The Problem statement
-[What problem are you solving?]
+Rural women artisans face:
+
+Difficulty in deciding correct selling price
+
+Lack of access to real-time market benchmarks
+
+Underpricing leading to profit loss
+
+No digital inventory tracking
+
+Limited exposure to structured market insights
 
 ### The Solution
-[How are you solving it?]
+Sahaya provides:
+
+AI-based pricing recommendation
+
+Village-level cost-of-living adjustments
+
+Craft-specific premium logic
+
+Inventory management dashboard
+
+Community market benchmark view
+
+Malayalam + English support
 
 ---
 
@@ -31,25 +53,21 @@
 ### Technologies/Components Used
 
 **For Software:**
-- Languages used: [e.g., JavaScript, Python, Java]
-- Frameworks used: [e.g., React, Django, Spring Boot]
-- Libraries used: [e.g., axios, pandas, JUnit]
-- Tools used: [e.g., VS Code, Git, Docker]
+- Languages used: HTML5,CSS (Tailwind CSS),JavaScript (Vanilla JS)
+- Frameworks used: Tailwind CSS (via CDN)
+- Libraries used:Lucide Icons,Google Fonts
+- Tools used:VS Code,Git & GitHub,Browser DevTools
 
-**For Hardware:**
-- Main components: [List main components]
-- Specifications: [Technical specifications]
-- Tools required: [List tools needed]
 
 ---
 
 ## Features
 
 List the key features of your project:
-- Feature 1: [Description]
-- Feature 2: [Description]
-- Feature 3: [Description]
-- Feature 4: [Description]
+- Feature 1: AI-based dynamic price calculation
+- Feature 2: Village-specific market adjustment
+- Feature 3:Bilingual interface (Malayalam & English)
+- Feature 4: Craft-based premium multiplier
 
 ---
 
@@ -59,21 +77,15 @@ List the key features of your project:
 
 #### Installation
 ```bash
-[Installation commands - e.g., npm install, pip install -r requirements.txt]
+git clone https://github.com/athulyahari05/sahaya-ai.git
+
 ```
 
 #### Run
 ```bash
-[Run commands - e.g., npm start, python app.py]
+ open index.html 
 ```
 
-### For Hardware:
-
-#### Components Required
-[List all components needed with specifications]
-
-#### Circuit Setup
-[Explain how to set up the circuit]
 
 ---
 
@@ -83,13 +95,15 @@ List the key features of your project:
 
 #### Screenshots (Add at least 3)
 
-![Screenshot1](Add screenshot 1 here with proper name)
+<img width="1842" height="899" alt="image" src="https://github.com/user-attachments/assets/dfcff3d6-a059-42c0-ac24-5460ec189eb9" />
+
+Language selection and entry screen
+
+
 *Add caption explaining what this shows*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+<img width="1039" height="859" alt="image" src="https://github.com/user-attachments/assets/3898e752-bf4f-43b7-a5f8-91ef57859d22" />
 
-![Screenshot3](Add screenshot 3 here with proper name)
 *Add caption explaining what this shows*
 
 #### Diagrams
