@@ -14,6 +14,8 @@
 
 ### Hosted Project Link
  https://athulyahari05.github.io/sahaya/
+ https://swathy00.github.io/sahaya/
+ 
 
 ### Project Description
 Sahaya is a bilingual AI-powered pricing assistant designed to support rural women artisans in Kerala. It helps artisans calculate optimal selling prices based on material cost, labor time, village-level cost adjustments, and craft-specific market trends.
@@ -78,6 +80,7 @@ List the key features of your project:
 #### Installation
 ```bash
 git clone https://github.com/athulyahari05/sahaya-ai.git
+git clone https://github.com/swathy00/sahaya-ai.git
 
 ```
 
